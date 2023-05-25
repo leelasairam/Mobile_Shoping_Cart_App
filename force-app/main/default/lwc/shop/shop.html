@@ -1,0 +1,99 @@
+<template>
+
+    <div style="background-color: #F0F0F0;padding:0.5rem;">
+        <!--Search and Filters-->
+        <div style="background-color:#635985;padding:0.5rem;border-radius:8px">
+            <lightning-layout multiple-rows>
+                <!--Input-->
+                <lightning-layout-item size="3" padding="around-small">
+                    <lightning-input class="search" variant="label-hidden" placeholder="Oppo"></lightning-input>
+                </lightning-layout-item>
+                <!--Search btn-->
+                <lightning-layout-item size="1" padding="around-small">
+                    <lightning-button onclick={SearchProducts} icon-name="utility:search" title="Search" variant="brand-outline"></lightning-button>
+                </lightning-layout-item>
+                <!--Filter btn-->
+                <lightning-layout-item size="4" padding="around-small">
+                    <lightning-button-group>
+                        <lightning-button onclick={SortProducts} data-btn="low-to-high" icon-name="utility:sort" label="Low-to-High"></lightning-button>
+                        <lightning-button onclick={SortProducts} data-btn="high-to-low" icon-name="utility:sort" label="High-to-Low"></lightning-button>
+                    </lightning-button-group>
+                </lightning-layout-item>
+                 <!--Cart and Orders-->
+                <lightning-layout-item size="2" padding="around-small">
+                    <lightning-button-group>
+                        <lightning-button title="Cart" onclick={ShowCartItems} label={InitialResponse.CartItemsSize}  icon-name="utility:cart"></lightning-button>
+                        <lightning-button title="Orders" onclick={GetOrderedItems}  icon-name="utility:orders"></lightning-button>
+                    </lightning-button-group>
+                </lightning-layout-item>
+                <!--Loggedin user name-->
+                <lightning-layout-item size="2" padding="around-small">
+                    <lightning-button title={InitialResponse.UserId} variant="inverse" icon-name="utility:user" label={InitialResponse.UserName}></lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+        </div>
+
+        <!--Layout-->
+        <lightning-layout multiple-rows>
+
+            <!--Product List-->
+            <lightning-layout-item size="8" padding="around-small">
+                <div class="card-items">
+                    <template for:each={Products} for:item="i">
+                        <lightning-card  title={i.Mobile_Name__c} key={i.Id}>
+                        <lightning-button slot="actions" data-productid={i.Id} onclick={CreateCartItem} variant="destructive-text" icon-name="utility:cart" label="Cart" title="Add to cart"></lightning-button>
+                        <img class="slds-p-horizontal_small" alt="product img" src={i.Image__c} style="height: 120px; width:120px" />
+                        <p class="price slds-p-horizontal_small"><b>{i.Price__c}/-</b></p>
+                        <p class="slds-p-horizontal_small">{i.Description__c}</p>
+                        </lightning-card>
+                    </template>
+                </div>
+            </lightning-layout-item>
+
+            <!--Product Details / Cart Items-->
+            <lightning-layout-item size="4" padding="around-small">
+
+                <!--Cart-->
+                <div if:true={ShowCart}>
+                    <lightning-card >
+                        <p slot="title"><b><lightning-icon icon-name="standard:webcart" alternative-text="Cart" title="Cart"></lightning-icon> Cart</b></p>
+                        <lightning-button label="Order" slot="actions" onclick={OrderConfirmation} variant="brand"></lightning-button>
+                        <template for:each={InitialResponse.CartItems} for:item="i">
+                            <lightning-tile key={i.Id} type="media" style="margin-bottom: 0.5rem;background-color:#F0F0F0">
+                                <p class="slds-p-horizontal_small" style="color: blue;"><b>{i.Mobile__r.Mobile_Name__c}</b></p>
+                                <img style="height:80px;width:80px;border-radius:8px" slot="media" src={i.Mobile__r.Image__c} />
+                                <p class="slds-p-horizontal_small"><b>{i.Mobile__r.Price__c} /-</b></p>
+                                <p class="slds-p-horizontal_small">{i.Mobile__r.Description__c}</p>
+                                <lightning-button class="slds-p-horizontal_small" data-cartitemid={i.Id} onclick={RemoveCartItem} icon-name="utility:delete" label="Remove" variant="base" style="margin-top: 0.2rem;float:right"></lightning-button>
+                            </lightning-tile>
+                        </template>
+                        <p slot="footer" style="color: #635985;"><b>Total Cart Value = {InitialResponse.CartValue} /-</b></p>
+                    </lightning-card>
+                </div>
+
+                <!--Orders-->
+                <div if:false={ShowCart}>
+                    <lightning-card>
+                        <p slot="title"><b><lightning-icon icon-name="standard:orders" alternative-text="Orders" title="Orders"></lightning-icon> Orders</b></p>
+                        <lightning-button slot="actions" label="Refresh" data-orderbtn="refresh" onclick={GetOrderedItems}></lightning-button>
+                        <template for:each={OrderItems} for:item="i">
+                            <p key={i.Id} style="color: #635985; margin-top:0.3rem; margin-bottom:0.3rem;margin-left:0.1rem;margin-right:0.1rem"><b>OrderId : {i.Id}</b></p>
+                            <template for:each={i.Orders} for:item="j">
+                                <lightning-tile key={j.Id} class="slds-p-horizontal_small" type="media" style="margin-bottom: 0.5rem;background-color:#F0F0F0">
+                                    <p class="slds-p-horizontal_small" style="color: blue;"><b>{j.Mobile_Product__r.Mobile_Name__c}</b></p>
+                                    <img style="height:80px;width:80px;border-radius:8px" slot="media" src={j.Mobile_Product__r.Image__c} />
+                                    <p class="slds-p-horizontal_small"><b>{j.Mobile_Product__r.Price__c} /-</b></p>
+                                    <p class="slds-p-horizontal_small">{j.Mobile_Product__r.Description__c}</p>
+                                </lightning-tile>
+                            </template>
+                        </template>
+                    </lightning-card>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+    <!--Spinner-->
+    <div if:true={load}>
+        <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+    </div>
+</template>
