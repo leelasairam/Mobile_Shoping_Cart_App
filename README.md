@@ -1,3 +1,10 @@
+# Preview
+
+![image](https://github.com/leelasairam/Mobile_Shoping_Cart_App/assets/81754419/10b68b10-9bfa-480c-bb5c-13d612cfad63)
+
+![image](https://github.com/leelasairam/Mobile_Shoping_Cart_App/assets/81754419/b6c6a822-1a29-4dda-a2e1-e16c63e39c30)
+
+--------------------------------------------
 # Salesforce DX Project: Next Steps
 
 Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
